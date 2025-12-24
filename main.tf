@@ -211,21 +211,21 @@ resource "azurerm_container_app" "worker" {
     min_replicas = var.worker_min_replicas
     max_replicas = var.worker_max_replicas
 
-    custom_scale_rule {
-      name = "servicebus-scale"
-      type = "azure-servicebus"
-
-      metadata = {
-        queueName     = var.sb_queue_name
-        namespace     = azurerm_servicebus_namespace.sb.name
-        messageCount  = tostring(var.keda_message_threshold)
-      }
-
-      authentication {
-        secret_name       = "sb-connection"
-        trigger_parameter = "connection"
-      }
+  custom_scale_rule {
+    name            = "servicebus-scale"
+    custom_rule_type = "azure-servicebus"
+  
+    metadata = {
+      queueName    = var.sb_queue_name
+      namespace    = azurerm_servicebus_namespace.sb.name
+      messageCount = tostring(var.keda_message_threshold)
     }
+  
+    authentication {
+      secret_name       = "sb-connection"
+      trigger_parameter = "connection"
+    }
+  }
   }
 
   depends_on = [
